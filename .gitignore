@@ -1,0 +1,6 @@
+(
+echo .env
+echo keuangan.db
+echo venv/
+echo __pycache__/
+) > .gitignore
