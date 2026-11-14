@@ -1,26 +1,132 @@
 # Bot Keuangan Telegram
 
-Kirim foto struk / screenshot e-wallet / foto belanjaan → bot membaca, kamu konfirmasi, data tersimpan.
+Kirim foto **struk belanja**, **screenshot riwayat e-wallet**, atau **foto belanjaan** ke bot Telegram.
+Bot membaca isinya dengan AI (Gemini), kamu konfirmasi, lalu datanya tersimpan dan bisa dilihat di laporan.
 
-## Cara menjalankan
+## Fitur
 
-1. Buat bot di Telegram: chat **@BotFather** → `/newbot` → salin token.
-2. Buat API key gratis di https://aistudio.google.com/apikey
-3. Install & siapkan:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate        # Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   cp .env.example .env            # lalu isi token & API key
-   ```
-4. Jalankan: `python bot.py`
-5. Buka bot kamu di Telegram, kirim `/start`, lalu kirim foto struk.
+- Baca struk: merchant, tanggal, total, dan kategori otomatis
+- Baca screenshot e-wallet: satu foto bisa berisi banyak transaksi
+- Foto belanjaan: bot mengenali barangnya, harga diisi manual (tidak ditebak)
+- Konfirmasi dengan tombol ✅ Simpan / ❌ Batal sebelum data masuk
+- Deteksi transaksi yang mirip dengan data tersimpan
+- `/laporan` untuk pengeluaran per kategori bulan ini, `/riwayat` untuk 10 transaksi terakhir
 
-## Perintah
-- `/laporan` — ringkasan pengeluaran per kategori bulan ini
-- `/riwayat` — 10 transaksi terakhir
+## Persiapan
 
-## Catatan
-- Foto tidak disimpan, hanya data hasil ekstraksi (di file `keuangan.db`).
-- Isi `ALLOWED_USER_IDS` di `.env` supaya hanya kamu yang bisa memakai bot (menghemat kuota gratis).
-- Jika model gratis berubah, ganti `GEMINI_MODEL` di `.env`.
+1. **Python 3.10 atau lebih baru.** Cek dengan `python --version`.
+2. **Token bot Telegram.** Chat [@BotFather](https://t.me/BotFather), kirim `/newbot`, lalu salin tokennya.
+3. **API key Gemini (gratis).** Buat di https://aistudio.google.com/apikey
+
+## Instalasi di Windows (cmd)
+
+Buka Command Prompt, lalu masuk ke folder proyek:
+
+```cmd
+cd "C:\lokasi\folder\bot-manage-keuangan"
+```
+
+Buat virtual environment dan install library (cukup sekali):
+
+```cmd
+python -m venv venv
+venv\Scripts\activate.bat
+python -m pip install -r requirements.txt
+```
+
+Kalau berhasil, muncul `(venv)` di awal baris.
+
+Buat file konfigurasi:
+
+```cmd
+copy .env.example .env
+notepad .env
+```
+
+Isi `.env` seperti ini, **tanpa tanda kutip dan tanpa spasi di sekitar `=`**:
+
+```
+TELEGRAM_TOKEN=123456:ABC-xxxx
+GEMINI_API_KEY=AIza-xxxx
+GEMINI_MODEL=gemini-3.5-flash-lite
+ALLOWED_USER_IDS=
+```
+
+Nama file harus persis `.env`. Kalau memakai Notepad, simpan dengan **Save as type: All Files**,
+kalau tidak akan tersimpan sebagai `.env.txt`.
+
+### Menjalankan bot
+
+```cmd
+venv\Scripts\activate.bat
+py bot.py
+```
+
+Atau klik dua kali **`jalankan.bat`** (lihat bagian di bawah). Kalau muncul tulisan `Bot berjalan...`,
+buka bot di Telegram, kirim `/start`, lalu kirim foto struk.
+
+Untuk menghentikan bot, tekan **Ctrl+C**. Bot hanya aktif selama jendela terminal terbuka
+dan komputer menyala.
+
+## Instalasi di Linux / Mac
+
+```bash
+cd bot-manage-keuangan
+python3 -m venv venv
+source venv/bin/activate
+python -m pip install -r requirements.txt
+cp .env.example .env
+nano .env
+python bot.py
+```
+
+## File `jalankan.bat` (opsional, Windows)
+
+Buat file bernama `jalankan.bat` di folder proyek dengan isi:
+
+```bat
+@echo off
+cd /d "%~dp0"
+call venv\Scripts\activate.bat
+py bot.py
+pause
+```
+
+Kalau library dipasang di Python global (tanpa venv), hapus baris `call venv\Scripts\activate.bat`.
+
+## Konfigurasi `.env`
+
+| Variabel | Fungsi |
+|---|---|
+| `TELEGRAM_TOKEN` | Token dari @BotFather |
+| `GEMINI_API_KEY` | API key dari Google AI Studio |
+| `GEMINI_MODEL` | Nama model Gemini. Ganti kalau model lama dihentikan |
+| `ALLOWED_USER_IDS` | ID Telegram yang boleh memakai bot, pisahkan dengan koma. Kosong berarti semua orang boleh. Cek ID lewat @userinfobot |
+
+## Masalah umum
+
+**`'pip.exe' was blocked by your organization's Device Guard policy`**
+Jalankan pip lewat Python: `python -m pip install -r requirements.txt`.
+
+**`ModuleNotFoundError: No module named 'dotenv'`**
+Library belum terinstal di Python yang dipakai. Aktifkan venv (harus ada `(venv)`), lalu install ulang.
+
+**`KeyError: 'TELEGRAM_TOKEN'`**
+File `.env` tidak terbaca. Pastikan namanya `.env` (bukan `.env.txt`) dan satu folder dengan `bot.py`.
+
+**`RuntimeError: There is no current event loop` (Python 3.14)**
+Tambahkan `import asyncio` di bagian atas `bot.py`, lalu di `main()` sebelum `app.run_polling()` tambahkan:
+`asyncio.set_event_loop(asyncio.new_event_loop())`
+
+**`404 NOT_FOUND ... model is no longer available`**
+Model Gemini yang dipakai sudah dihentikan. Ganti `GEMINI_MODEL` di `.env` dengan model yang disarankan di pesan error.
+
+**Error 429 (kuota habis)**
+Kuota gratis harian Gemini sudah terpakai. Tunggu sampai reset, atau cek batas terbarunya di Google AI Studio.
+
+## Keamanan
+
+- **Jangan pernah meng-upload `.env` atau `keuangan.db`.** Keduanya sudah masuk `.gitignore`.
+- Foto tidak disimpan, hanya data hasil ekstraksi (di `keuangan.db`).
+- Kalau token bocor (misalnya tampil di log yang dibagikan), buat yang baru lewat @BotFather dengan `/revoke`.
+- Isi `ALLOWED_USER_IDS` supaya hanya kamu yang bisa memakai bot dan kuota gratismu tidak terpakai orang lain.
