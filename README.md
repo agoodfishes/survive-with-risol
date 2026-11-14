@@ -62,7 +62,7 @@ venv\Scripts\activate.bat
 py bot.py
 ```
 
-Atau klik dua kali **`jalankan.bat`** (lihat bagian di bawah). Kalau muncul tulisan `Bot berjalan...`,
+Atau klik dua kali **`start-bot.bat`** (lihat bagian di bawah). Kalau muncul tulisan `Bot berjalan...`,
 buka bot di Telegram, kirim `/start`, lalu kirim foto struk.
 
 Untuk menghentikan bot, tekan **Ctrl+C**. Bot hanya aktif selama jendela terminal terbuka
@@ -80,9 +80,9 @@ nano .env
 python bot.py
 ```
 
-## File `jalankan.bat` (opsional, Windows)
+## File `start-bot.bat` (opsional, Windows)
 
-Buat file bernama `jalankan.bat` di folder proyek dengan isi:
+Buat file bernama `start-bot.bat` di folder proyek dengan isi:
 
 ```bat
 @echo off
@@ -123,10 +123,3 @@ Model Gemini yang dipakai sudah dihentikan. Ganti `GEMINI_MODEL` di `.env` denga
 
 **Error 429 (kuota habis)**
 Kuota gratis harian Gemini sudah terpakai. Tunggu sampai reset, atau cek batas terbarunya di Google AI Studio.
-
-## Keamanan
-
-- **Jangan pernah meng-upload `.env` atau `keuangan.db`.** Keduanya sudah masuk `.gitignore`.
-- Foto tidak disimpan, hanya data hasil ekstraksi (di `keuangan.db`).
-- Kalau token bocor (misalnya tampil di log yang dibagikan), buat yang baru lewat @BotFather dengan `/revoke`.
-- Isi `ALLOWED_USER_IDS` supaya hanya kamu yang bisa memakai bot dan kuota gratismu tidak terpakai orang lain.
