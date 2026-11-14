@@ -1,4 +1,4 @@
-# Bot Keuangan Telegram
+# SURVIVE WITH RISOL (Bot Keuangan Telegram)
 
 Kirim foto **struk belanja**, **screenshot riwayat e-wallet**, atau **foto belanjaan** ke bot Telegram.
 Bot membaca isinya dengan AI (Gemini), kamu konfirmasi, lalu datanya tersimpan dan bisa dilihat di laporan.
@@ -23,7 +23,7 @@ Bot membaca isinya dengan AI (Gemini), kamu konfirmasi, lalu datanya tersimpan d
 Buka Command Prompt, lalu masuk ke folder proyek:
 
 ```cmd
-cd "C:\lokasi\folder\bot-manage-keuangan"
+cd "C:\lokasi\folder\survive-with-risol"
 ```
 
 Buat virtual environment dan install library (cukup sekali):
