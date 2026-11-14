@@ -102,24 +102,3 @@ Kalau library dipasang di Python global (tanpa venv), hapus baris `call venv\Scr
 | `GEMINI_API_KEY` | API key dari Google AI Studio |
 | `GEMINI_MODEL` | Nama model Gemini. Ganti kalau model lama dihentikan |
 | `ALLOWED_USER_IDS` | ID Telegram yang boleh memakai bot, pisahkan dengan koma. Kosong berarti semua orang boleh. Cek ID lewat @userinfobot |
-
-## Masalah umum
-
-**`'pip.exe' was blocked by your organization's Device Guard policy`**
-Jalankan pip lewat Python: `python -m pip install -r requirements.txt`.
-
-**`ModuleNotFoundError: No module named 'dotenv'`**
-Library belum terinstal di Python yang dipakai. Aktifkan venv (harus ada `(venv)`), lalu install ulang.
-
-**`KeyError: 'TELEGRAM_TOKEN'`**
-File `.env` tidak terbaca. Pastikan namanya `.env` (bukan `.env.txt`) dan satu folder dengan `bot.py`.
-
-**`RuntimeError: There is no current event loop` (Python 3.14)**
-Tambahkan `import asyncio` di bagian atas `bot.py`, lalu di `main()` sebelum `app.run_polling()` tambahkan:
-`asyncio.set_event_loop(asyncio.new_event_loop())`
-
-**`404 NOT_FOUND ... model is no longer available`**
-Model Gemini yang dipakai sudah dihentikan. Ganti `GEMINI_MODEL` di `.env` dengan model yang disarankan di pesan error.
-
-**Error 429 (kuota habis)**
-Kuota gratis harian Gemini sudah terpakai. Tunggu sampai reset, atau cek batas terbarunya di Google AI Studio.
