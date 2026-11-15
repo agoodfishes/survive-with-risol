@@ -1,6 +1,5 @@
-(
-echo .env
-echo keuangan.db
-echo venv/
-echo __pycache__/
-) > .gitignore
+.env
+keuangan.db
+venv/
+__pycache__/
+*.zip
