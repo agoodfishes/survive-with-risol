@@ -5,12 +5,37 @@ Bot membaca isinya dengan AI (Gemini), kamu konfirmasi, lalu datanya tersimpan d
 
 ## Fitur
 
-- Baca struk: merchant, tanggal, total, dan kategori otomatis
-- Baca screenshot e-wallet: satu foto bisa berisi banyak transaksi
-- Foto belanjaan: bot mengenali barangnya, harga diisi manual (tidak ditebak)
-- Konfirmasi dengan tombol ✅ Simpan / ❌ Batal sebelum data masuk
+- **Baca foto**: struk, screenshot e-wallet (banyak transaksi sekaligus), dan foto belanjaan (harga diisi manual)
+- **Input manual**: ketik `-25rb makan siang` (pengeluaran) atau `+5jt gaji` (pemasukan)
+- **Pemasukan dibagi otomatis** ke kategori (amplop) sesuai persentase yang bisa kamu atur
+- **Pengeluaran mengurangi saldo kategorinya**, misalnya beli kopi mengurangi saldo Keinginan
+- **Koreksi hasil deteksi**: ubah jumlah, tanggal, nama, kategori, atau masuk/keluar sebelum disimpan, juga untuk transaksi yang sudah tersimpan
+- **Bot belajar dari koreksi**: kalau kamu memperbaiki kategori suatu toko, transaksi berikutnya dari toko itu langsung memakai kategori yang benar
+- **Rekomendasi anggaran (AI)**: tentukan berapa lama uang harus cukup, AI membagi ke pos seperti makan & minum, transportasi, dan kebutuhan kuliah. Persentase dari AI, nominal rupiahnya dihitung oleh kode supaya totalnya selalu pas
 - Deteksi transaksi yang mirip dengan data tersimpan
-- `/laporan` untuk pengeluaran per kategori bulan ini, `/riwayat` untuk 10 transaksi terakhir
+
+## Perintah
+
+| Perintah | Fungsi |
+|---|---|
+| `-25rb makan siang` | Catat pengeluaran (kategori ditebak otomatis) |
+| `+5jt gaji` | Catat pemasukan (dibagi otomatis) |
+| `/masuk 5jt gaji`, `/keluar 25rb kopi` | Cara lain mengetik transaksi |
+| `/saldo` | Saldo tiap kategori dan total |
+| `/alokasi` | Lihat atau ubah pembagian pemasukan. Contoh: `/alokasi Kebutuhan 50 Keinginan 10 Tabungan 40`. Total harus 100%. `/alokasi reset` mengembalikan ke awal |
+| `/riwayat` | 10 transaksi terakhir beserta nomornya |
+| `/edit 12` | Koreksi transaksi nomor 12 |
+| `/hapus 12` | Hapus transaksi nomor 12 |
+| `/laporan` | Pengeluaran per kategori bulan ini |
+| `/rencana 500rb 1 minggu` | Rekomendasi AI: uang itu dibagi ke pos apa saja agar cukup selama periodenya. Tanpa jumlah (`/rencana 1 minggu`), bot memakai saldo Kebutuhan + Keinginan saat ini |
+
+Jumlah boleh ditulis `25000`, `25.000`, `25rb`, `25k`, atau `1,5jt`.
+
+Kategori (amplop): **Kebutuhan**, **Keinginan**, dan **Tabungan & Dana Darurat**.
+Pembagian awal: Kebutuhan 55%, Keinginan 10%, Tabungan & Dana Darurat 35%. Ubah dengan `/alokasi`.
+Kategori pengeluaran ditebak dari kata kunci, dan bisa dikoreksi lewat tombol ✏️ Koreksi. Bot mengingat koreksimu.
+
+Kalau kamu upgrade dari versi dengan 9 kategori, data lama otomatis dipetakan: Makanan, Belanja Harian, Transportasi, Tagihan, Kesehatan, Pendidikan, dan Lainnya menjadi Kebutuhan; Hiburan menjadi Keinginan; Tabungan menjadi Tabungan & Dana Darurat.
 
 ## Persiapan
 
@@ -101,6 +126,7 @@ Kalau library dipasang di Python global (tanpa venv), hapus baris `call venv\Scr
 | `TELEGRAM_TOKEN` | Token dari @BotFather |
 | `GEMINI_API_KEY` | API key dari Google AI Studio |
 | `GEMINI_MODEL` | Nama model Gemini. Ganti kalau model lama dihentikan |
+| `KIRIM_RIWAYAT_KE_AI` | `1` (default): `/rencana` mengirim deskripsi pengeluaran 30 hari terakhir ke AI agar saran lebih pas. `0`: hanya total per kategori yang dikirim |
 | `ALLOWED_USER_IDS` | ID Telegram yang boleh memakai bot, pisahkan dengan koma. Kosong berarti semua orang boleh. Cek ID lewat @userinfobot |
 
 ## Masalah umum
@@ -114,10 +140,6 @@ Library belum terinstal di Python yang dipakai. Aktifkan venv (harus ada `(venv)
 **`KeyError: 'TELEGRAM_TOKEN'`**
 File `.env` tidak terbaca. Pastikan namanya `.env` (bukan `.env.txt`) dan satu folder dengan `bot.py`.
 
-**`RuntimeError: There is no current event loop` (Python 3.14)**
-Tambahkan `import asyncio` di bagian atas `bot.py`, lalu di `main()` sebelum `app.run_polling()` tambahkan:
-`asyncio.set_event_loop(asyncio.new_event_loop())`
-
 **`404 NOT_FOUND ... model is no longer available`**
 Model Gemini yang dipakai sudah dihentikan. Ganti `GEMINI_MODEL` di `.env` dengan model yang disarankan di pesan error.
 
@@ -125,6 +147,8 @@ Model Gemini yang dipakai sudah dihentikan. Ganti `GEMINI_MODEL` di `.env` denga
 Kuota gratis harian Gemini sudah terpakai. Tunggu sampai reset, atau cek batas terbarunya di Google AI Studio.
 
 ## Keamanan
+
+- **Privasi data di tier gratis Gemini.** Foto struk dan data untuk `/rencana` dikirim ke Gemini API. Pada kuota gratis, Google boleh memakai data yang dikirim untuk meningkatkan produknya, dan peninjau manusia bisa membacanya. Google menyarankan tidak mengirim data sensitif atau pribadi lewat layanan gratis. Kalau ini mengkhawatirkan, aktifkan billing di Google Cloud (data tidak dipakai untuk meningkatkan produk pada layanan berbayar), dan pertimbangkan `KIRIM_RIWAYAT_KE_AI=0`. Cek ketentuan terbaru di https://ai.google.dev/terms
 
 - **Jangan pernah meng-upload `.env` atau `keuangan.db`.** Keduanya sudah masuk `.gitignore`.
 - Foto tidak disimpan, hanya data hasil ekstraksi (di `keuangan.db`).
