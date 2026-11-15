@@ -1,4 +1,4 @@
-# Bot Keuangan Telegram
+# SURVIVE WITH RISOL (Bot Keuangan Telegram)
 
 Kirim foto **struk belanja**, **screenshot riwayat e-wallet**, atau **foto belanjaan** ke bot Telegram.
 Bot membaca isinya dengan AI (Gemini), kamu konfirmasi, lalu datanya tersimpan dan bisa dilihat di laporan.
@@ -87,7 +87,7 @@ venv\Scripts\activate.bat
 py bot.py
 ```
 
-Atau klik dua kali **`jalankan.bat`** (lihat bagian di bawah). Kalau muncul tulisan `Bot berjalan...`,
+Atau klik dua kali **`start-bot.bat`** (lihat bagian di bawah). Kalau muncul tulisan `Bot berjalan...`,
 buka bot di Telegram, kirim `/start`, lalu kirim foto struk.
 
 Untuk menghentikan bot, tekan **Ctrl+C**. Bot hanya aktif selama jendela terminal terbuka
@@ -105,9 +105,9 @@ nano .env
 python bot.py
 ```
 
-## File `jalankan.bat` (opsional, Windows)
+## File `start-bot.bat` (opsional, Windows)
 
-Buat file bernama `jalankan.bat` di folder proyek dengan isi:
+Buat file bernama `start-bot.bat` di folder proyek dengan isi:
 
 ```bat
 @echo off
@@ -128,29 +128,6 @@ Kalau library dipasang di Python global (tanpa venv), hapus baris `call venv\Scr
 | `GEMINI_MODEL` | Nama model Gemini. Ganti kalau model lama dihentikan |
 | `KIRIM_RIWAYAT_KE_AI` | `1` (default): `/rencana` mengirim deskripsi pengeluaran 30 hari terakhir ke AI agar saran lebih pas. `0`: hanya total per kategori yang dikirim |
 | `ALLOWED_USER_IDS` | ID Telegram yang boleh memakai bot, pisahkan dengan koma. Kosong berarti semua orang boleh. Cek ID lewat @userinfobot |
-
-## Masalah umum
-
-**`'pip.exe' was blocked by your organization's Device Guard policy`**
-Jalankan pip lewat Python: `python -m pip install -r requirements.txt`.
-
-**`ModuleNotFoundError: No module named 'dotenv'`**
-Library belum terinstal di Python yang dipakai. Aktifkan venv (harus ada `(venv)`), lalu install ulang.
-
-**`KeyError: 'TELEGRAM_TOKEN'`**
-File `.env` tidak terbaca. Pastikan namanya `.env` (bukan `.env.txt`) dan satu folder dengan `bot.py`.
-
-**`404 NOT_FOUND ... model is no longer available`**
-Model Gemini yang dipakai sudah dihentikan. Ganti `GEMINI_MODEL` di `.env` dengan model yang disarankan di pesan error.
-
-**Error 429 (kuota habis)**
-Kuota gratis harian Gemini sudah terpakai. Tunggu sampai reset, atau cek batas terbarunya di Google AI Studio.
-
-## Keamanan
-
-- **Privasi data di tier gratis Gemini.** Foto struk dan data untuk `/rencana` dikirim ke Gemini API. Pada kuota gratis, Google boleh memakai data yang dikirim untuk meningkatkan produknya, dan peninjau manusia bisa membacanya. Google menyarankan tidak mengirim data sensitif atau pribadi lewat layanan gratis. Kalau ini mengkhawatirkan, aktifkan billing di Google Cloud (data tidak dipakai untuk meningkatkan produk pada layanan berbayar), dan pertimbangkan `KIRIM_RIWAYAT_KE_AI=0`. Cek ketentuan terbaru di https://ai.google.dev/terms
-
-- **Jangan pernah meng-upload `.env` atau `keuangan.db`.** Keduanya sudah masuk `.gitignore`.
 - Foto tidak disimpan, hanya data hasil ekstraksi (di `keuangan.db`).
 - Kalau token bocor (misalnya tampil di log yang dibagikan), buat yang baru lewat @BotFather dengan `/revoke`.
 - Isi `ALLOWED_USER_IDS` supaya hanya kamu yang bisa memakai bot dan kuota gratismu tidak terpakai orang lain.
